@@ -12,7 +12,6 @@ variable "location" {
 variable "arc_cluster_name" {
   description = "Nomde do cluster conectado no Azure"
   type        = string
-  default     = "SoatChallengeAKS"
 }
 
 variable "gitops_repo_url" {
