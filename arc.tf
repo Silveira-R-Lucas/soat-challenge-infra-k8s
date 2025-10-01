@@ -5,10 +5,10 @@ resource "azurerm_arc_kubernetes_flux_configuration" "app_config" {
   scope      = "cluster"
 
   git_repository {
-    url             = var.gitops_repo_url
+    url                    = var.gitops_repo_url
     ssh_private_key_base64 = var.gitops_ssh_private_key
-    reference_type  = "branch"
-    reference_value = "main"
+    reference_type         = "branch"
+    reference_value        = "main"
   }
 
   kustomizations {
