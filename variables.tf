@@ -14,11 +14,10 @@ variable "location" {
 variable "arc_cluster_name" {
   description = "SoatChallengeAKS"
   type        = string
-  default     = "cluster-magalu-soat"
+  default     = "SoatChallengeAKS"
 }
 
 variable "gitops_repo_url" {
-  description = "A URL do repositório Git que contém os manifestos do Kubernetes."
+  description = "git@github.com:Silveira-R-Lucas/soat-challenge-infra-k8s.git"
   type        = string
-  # Exemplo: "git@github.com:seu-usuario/soat-challenge-k8s-manifests.git"
 }
