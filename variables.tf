@@ -38,3 +38,9 @@ variable "node_flavor" {
   type        = string
   default     = "c1.medium"
 }
+
+variable "mgc_api_key" {
+  description = "api key mgc"
+  type        = string
+  sensitive   = true
+}

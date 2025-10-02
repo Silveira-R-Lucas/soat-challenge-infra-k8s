@@ -1,5 +1,3 @@
-# main.tf
-
 terraform {
   required_providers {
     mgc = {
@@ -16,7 +14,9 @@ terraform {
   }
 }
 
-provider "mgc" {}
+provider "mgc" {
+  api_key = var.mgc_api_key
+}
 
 module "kubernetes_cluster" {
   source = "./cluster"
