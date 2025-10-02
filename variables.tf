@@ -40,7 +40,7 @@ variable "node_flavor" {
   default     = "c1.medium"
 }
 
-variable "secret_key" {
+variable "mgc_secret_key" {
   type        = string
   sensitive   = true
   description = "Secret Key"
