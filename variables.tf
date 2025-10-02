@@ -30,7 +30,6 @@ variable "cluster_version" {
 
 variable "node_count" {
   description = "O número de nós no node pool."
-  type        = number
   default     = 1
 }
 
