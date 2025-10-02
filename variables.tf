@@ -1,32 +1,47 @@
-variable "resource_group_name" {
-  description = "Nome do grupo de recursos Azure"
+variable "rails_app_image_tag" {
+  description = "A tag da imagem Docker da aplicação Rails."
   type        = string
+  default     = "latest"
 }
 
-variable "location" {
-  description = "Brazil South"
+variable "mgc_region" {
+  description = "A região da Magalu Cloud onde o cluster será criado."
   type        = string
-  default     = "Brazil South"
+  default     = "br-se1"
 }
 
-variable "arc_cluster_name" {
-  description = "Nomde do cluster conectado no Azure"
+variable "mgc_availability_zone" {
+  description = "A zona de disponibilidade para o node pool."
   type        = string
+  default     = "br-se1-a"
 }
 
-variable "gitops_repo_url" {
-  description = "git@github.com:Silveira-R-Lucas/soat-challenge-infra-k8s.git"
+variable "cluster_name" {
+  description = "O nome do cluster Kubernetes."
   type        = string
-  default     = "git@github.com:Silveira-R-Lucas/soat-challenge-infra-k8s.git"
+  default     = "soat-challenge-cluster"
 }
 
-variable "gitops_ssh_private_key" {
-  description = "A chave SSH privada (em formato Base64) para aceder ao repositório Git."
+variable "cluster_version" {
+  description = "A versão do Kubernetes a ser usada."
+  type        = string
+  default     = "1.32.3"
+}
+
+variable "node_count" {
+  description = "O número de nós no node pool."
+  type        = number
+  default     = 1
+}
+
+variable "node_flavor" {
+  description = "O tamanho (flavor) dos nós."
+  type        = string
+  default     = "c1.medium"
+}
+
+variable "secret_key" {
   type        = string
   sensitive   = true
-}
-
-variable "azure_subscription_id" {
-  description = "O ID da subscrição do Azure onde os recursos serão provisionados."
-  type        = string
+  description = "Secret Key"
 }
