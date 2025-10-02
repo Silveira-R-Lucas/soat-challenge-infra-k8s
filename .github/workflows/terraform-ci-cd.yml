@@ -19,6 +19,10 @@ jobs:
       TF_VAR_cluster_version: ${{ vars.CLUSTER_VERSION }}
       TF_VAR_node_count: ${{ vars.NODE_COUNT }}
       TF_VAR_node_flavor: ${{ vars.NODE_FLAVOR }}
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
     steps:
       - name: Checkout
