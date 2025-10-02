@@ -1,7 +1,7 @@
 name: Terraform CI/CD for Magalu Cloud
 env:
-      MGC_ACCESS_KEY: ${{ secrets.MGC_ACCESS_KEY }}
-      MGC_SECRET_KEY: ${{ secrets.MGC_SECRET_KEY }}
+      mgc_access_key: ${{ secrets.MGC_ACCESS_KEY }}
+      mgc_secret_key: ${{ secrets.MGC_SECRET_KEY }}
 
       TF_VAR_rails_app_image_tag: ${{ vars.RAILS_APP_IMAGE_TAG }}
       TF_VAR_mgc_region: ${{ vars.MGC_REGION }}
