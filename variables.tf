@@ -10,12 +10,6 @@ variable "mgc_region" {
   default     = "br-se1"
 }
 
-variable "mgc_availability_zone" {
-  description = "A zona de disponibilidade para o node pool."
-  type        = string
-  default     = "br-se1-a"
-}
-
 variable "cluster_name" {
   description = "O nome do cluster Kubernetes."
   type        = string

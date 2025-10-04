@@ -22,8 +22,3 @@ variable "node_flavor" {
   description = "O tamanho (flavor) dos nós."
   type        = string
 }
-
-variable "mgc_availability_zone" {
-  description = "A zona de disponibilidade para o node pool."
-  type        = string
-}
