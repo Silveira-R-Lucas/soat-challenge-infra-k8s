@@ -26,7 +26,6 @@ module "kubernetes_cluster" {
   cluster_version       = var.cluster_version
   node_count            = var.node_count
   node_flavor           = var.node_flavor
-  mgc_availability_zone = var.mgc_availability_zone
 }
 
 provider "kubernetes" {

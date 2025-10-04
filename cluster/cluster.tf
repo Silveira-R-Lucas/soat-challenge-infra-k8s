@@ -16,5 +16,4 @@ resource "mgc_kubernetes_nodepool" "main_pool" {
   cluster_id = mgc_kubernetes_cluster.soat_cluster.id
   replicas = var.node_count
   flavor_name = var.node_flavor
-  availability_zones = [var.mgc_availability_zone]
 }

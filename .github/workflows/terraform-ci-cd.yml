@@ -14,7 +14,6 @@ jobs:
       TF_VAR_mgc_secret_key: ${{ secrets.MGC_SECRET_KEY }}
       TF_VAR_rails_app_image_tag: ${{ vars.RAILS_APP_IMAGE_TAG }}
       TF_VAR_mgc_region: ${{ vars.MGC_REGION }}
-      TF_VAR_mgc_availability_zone: ${{ vars.MGC_AVAILABILITY_ZONE }}
       TF_VAR_cluster_name: ${{ vars.CLUSTER_NAME }}
       TF_VAR_cluster_version: ${{ vars.CLUSTER_VERSION }}
       TF_VAR_node_count: ${{ vars.NODE_COUNT }}
