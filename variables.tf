@@ -7,7 +7,6 @@ variable "rails_app_image_tag" {
 variable "mgc_region" {
   description = "A região da Magalu Cloud onde o cluster será criado."
   type        = string
-  default     = "br-se1"
 }
 
 variable "cluster_name" {
@@ -30,7 +29,6 @@ variable "node_count" {
 variable "node_flavor" {
   description = "O tamanho (flavor) dos nós."
   type        = string
-  default     = "c1.medium"
 }
 
 variable "mgc_api_key" {
