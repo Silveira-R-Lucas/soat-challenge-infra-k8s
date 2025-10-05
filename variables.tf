@@ -1,23 +1,11 @@
-variable "rails_app_image_tag" {
-  description = "A tag da imagem Docker da aplicação Rails."
+variable "aws_region" {
+  description = "A região da AWS onde os recursos serão criados."
   type        = string
-  default     = "latest"
-}
-
-variable "mgc_region" {
-  description = "A região da Magalu Cloud onde o cluster será criado."
-  type        = string
-  default     = "br-se1"
-}
-
-variable "mgc_availability_zone" {
-  description = "A zona de disponibilidade para o node pool."
-  type        = string
-  default     = "br-se1-a"
+  default     = "sa-east-1"
 }
 
 variable "cluster_name" {
-  description = "O nome do cluster Kubernetes."
+  description = "O nome do cluster Kubernetes EKS."
   type        = string
   default     = "soat-challenge-cluster"
 }
@@ -25,22 +13,29 @@ variable "cluster_name" {
 variable "cluster_version" {
   description = "A versão do Kubernetes a ser usada."
   type        = string
-  default     = "1.32.3"
+  default     = "1.33"
 }
 
 variable "node_count" {
   description = "O número de nós no node pool."
+  type        = number
   default     = 1
 }
 
 variable "node_flavor" {
-  description = "O tamanho (flavor) dos nós."
+  description = "O tipo de instância (flavor) dos nós."
   type        = string
-  default     = "c1.medium"
+  default     = "t3.small"
 }
 
-variable "mgc_api_key" {
-  description = "api key mgc"
+variable "rails_app_image_tag" {
+  description = "A tag da imagem Docker da aplicação Rails."
+  type        = string
+  default     = "latest"
+}
+
+variable "database_url" {
+  description = "A URL de conexão completa para o banco de dados do Rails."
   type        = string
   sensitive   = true
 }

@@ -5,10 +5,17 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  SECRET_NAME: "soat/k8s/kubeconfig"
+
 jobs:
   terraform:
-    name: 'Terraform Plan and Apply'
+    name: 'Terraform Plan and Apply EKS'
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
     env:
       TF_VAR_mgc_api_key: ${{ secrets.MGC_ACCESS_KEY }}
       TF_VAR_mgc_secret_key: ${{ secrets.MGC_SECRET_KEY }}
@@ -28,6 +35,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: sa-east-1
+      
+      - name: Get Database Secret from AWS Secrets Manager
+        id: get-db-secret
+        uses: aws-actions/aws-secrets-manager-get-secrets@v2
+        with:
+          secret-ids: |
+            RAILS_DATABASE_URL, soat/db/database_url
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -36,7 +57,18 @@ jobs:
 
       - name: Terraform Plan
         run: terraform plan -input=false -out=tfplan
+        env:
+          TF_VAR_database_url: ${{ steps.get-db-secret.outputs.RAILS_DATABASE_URL }}
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false tfplan
+        env:
+          TF_VAR_database_url: ${{ steps.get-db-secret.outputs.RAILS_DATABASE_URL }}
+
+      - name: Get Kubeconfig Output and Save to Secrets Manager
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          KUBECONFIG_CONTENT=$(terraform output -raw cluster_kubeconfig_content)
+          
+          aws secretsmanager put-secret-value --secret-id ${{ env.SECRET_NAME }} --secret-string "$KUBECONFIG_CONTENT"

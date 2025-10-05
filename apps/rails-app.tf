@@ -25,7 +25,7 @@ resource "kubernetes_deployment_v1" "rails_app" {
       spec {
         container {
           name  = "rails"
-          image = "seu-container-registry/soat-app-rails:${var.rails_app_image_tag}"
+          image = "container-registry.br-se1.magalu.cloud/soat-challenge-2/soat_tech_challenge:latest"
 
           port {
             container_port = 3000
