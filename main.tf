@@ -87,4 +87,13 @@ module "kubernetes_apps" {
 
   depends_on          = [module.kubernetes_cluster]
   rails_app_image_tag = var.rails_app_image_tag
+  database_url                 = var.database_url
+  rails_master_key                = var.rails_master_key
+  identify_client_function_url    = var.identify_client_function_url
+  create_user_function_url        = var.create_user_function_url
+  mercadopago_secret              = var.mercadopago_secret
+  mercadopago_notification_url    = var.mercadopago_notification_url
+  mercadopago_external_pos_id     = var.mercadopago_external_pos_id
+  mercadopago_user_id             = var.mercadopago_user_id
+  mercadopago_token               = var.mercadopago_token
 }
