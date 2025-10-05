@@ -32,6 +32,11 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          MERCADOPAGO_SECRET: ${{ secrets.MERCADOPAGO_SECRET }}
+          MERCADOPAGO_NOTIFICATION_URL: ${{ vars.MERCADOPAGO_NOTIFICATION_URL }}
+          MERCADOPAGO_EXTERNAL_POS_ID: ${{ secrets.MERCADOPAGO_EXTERNAL_POS_ID }}
+          MERCADOPAGO_USER_ID: ${{ secrets.MERCADOPAGO_USER_ID }}
+          MERCADOPAGO_TOKEN: ${{ secrets.MERCADOPAGO_TOKEN }} 
           aws-region: sa-east-1
       
       - name: Get Database Secret from AWS Secrets Manager
