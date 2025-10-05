@@ -27,7 +27,7 @@ variable "mercadopago_token" {
 }
 
 variable "mercadopago_user_id" {
-  description = "User Mercado pago""
+  description = "User Mercado pago"
   type        = string
   sensitive   = true
 }
