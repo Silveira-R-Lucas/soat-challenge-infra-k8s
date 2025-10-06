@@ -55,6 +55,12 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: 'Passo de Reparo Alternativo: Remover e Re-importar Recurso'
+        id: state-fix
+        run: |
+          terraform state rm module.kubernetes_apps.kubernetes_deployment_v1.rails_app
+          terraform import module.kubernetes_apps.kubernetes_deployment_v1.rails_app default/rails-app-deployment
+
       - name: Terraform Plan
         run: terraform plan -input=false -out=tfplan
         env:
