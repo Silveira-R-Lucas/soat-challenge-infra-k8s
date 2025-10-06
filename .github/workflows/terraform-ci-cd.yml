@@ -50,6 +50,14 @@ jobs:
             RAILS_DATABASE_URL, soat/db/database_url
             MAGALU_CR, soat/k8s/app-secrets
 
+      - name: Debug Secrets Output
+        run: |
+          echo "DATABASE_URL Length: ${{ env.DB_URL_LENGTH }}"
+          echo "MAGALU_CR Length: ${{ env.MAGALU_CR_LENGTH }}"
+        env:
+          DB_URL_LENGTH: ${{ join(steps.get-app-secrets.outputs.RAILS_DATABASE_URL, '') }}
+          MAGALU_CR_LENGTH: ${{ join(steps.get-app-secrets.outputs.MAGALU_CR, '') }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
