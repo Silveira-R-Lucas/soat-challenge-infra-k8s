@@ -43,7 +43,7 @@ jobs:
           aws-region: sa-east-1
       
       - name: Get Database Secret from AWS Secrets Manager
-        id: get-db-secret
+        id: get-app-secrets
         uses: aws-actions/aws-secretsmanager-get-secrets@v2
         with:
           secret-ids: |
@@ -59,9 +59,9 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -input=false -out=tfplan
         env:
-          TF_VAR_database_url: ${{ steps.get-db-secret.outputs.RAILS_DATABASE_URL }}
-          TF_VAR_magalu_cr_username: ${{ fromJson(steps.get-app-secrets.outputs.MAGALU_CR).username }}
-          TF_VAR_magalu_cr_password: ${{ fromJson(steps.get-app-secrets.outputs.MAGALU_CR).password }}
+          TF_VAR_database_url: ${{ steps.get-app-secrets.outputs.RAILS_DATABASE_URL }}
+          TF_VAR_magalu_cr_username: ${{ fromJson(steps.get-app-secrets.outputs.MAGALU_CR).docker-username }}
+          TF_VAR_magalu_cr_password: ${{ fromJson(steps.get-app-secrets.outputs.MAGALU_CR).docker-password }}
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
