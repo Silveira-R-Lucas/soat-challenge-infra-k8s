@@ -98,4 +98,6 @@ module "kubernetes_apps" {
   mercadopago_external_pos_id     = var.mercadopago_external_pos_id
   mercadopago_user_id             = var.mercadopago_user_id
   mercadopago_token               = var.mercadopago_token
+  magalu_cr_username              = var.magalu_cr_username
+  magalu_cr_password              = var.magalu_cr_password
 }

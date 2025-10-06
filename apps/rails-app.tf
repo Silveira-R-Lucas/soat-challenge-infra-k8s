@@ -23,6 +23,11 @@ resource "kubernetes_deployment_v1" "rails_app" {
       }
 
       spec {
+        image_pull_secrets {
+          name = kubernetes_secret_v1.magalu_registry_secret.metadata[0].name
+        }
+
+      spec {
         container {
           name  = "rails"
           image = "container-registry.br-se1.magalu.cloud/soat-challenge-2/soat_tech_challenge:latest"
@@ -33,12 +38,12 @@ resource "kubernetes_deployment_v1" "rails_app" {
 
           env_from {
             secret_ref {
-              name = "rails-secrets"
+              name = kubernetes_secret_v1.rails_app_secrets.metadata[0].name
             }
           }
           env_from {
             secret_ref {
-              name = "rails-db-secret" 
+              name = kubernetes_secret_v1.rails_db_secret.metadata[0].name
             }
           }
         }

@@ -54,3 +54,15 @@ variable "database_url" {
   type        = string
   sensitive   = true
 }
+
+variable "magalu_cr_username" {
+  description = "Usuário para o registro de contêiner do Magalu Cloud."
+  type        = string
+  sensitive   = true
+}
+
+variable "magalu_cr_password" {
+  description = "Senha/Token para o registro de contêiner do Magalu Cloud."
+  type        = string
+  sensitive   = true
+}
