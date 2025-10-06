@@ -94,4 +94,7 @@ module "kubernetes_apps" {
   mercadopago_external_pos_id     = var.mercadopago_external_pos_id
   mercadopago_user_id             = var.mercadopago_user_id
   mercadopago_token               = var.mercadopago_token
+  database_url                    = data.aws_secretsmanager_secret_version.db_url.secret_string
+  magalu_cr_username              = local.magalu_cr_credentials["docker-username"]
+  magalu_cr_password              = local.magalu_cr_credentials["docker-password"]
 }
