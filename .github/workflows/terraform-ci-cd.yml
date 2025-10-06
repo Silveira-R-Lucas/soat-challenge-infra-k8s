@@ -48,7 +48,7 @@ jobs:
         with:
           secret-ids: |
             RAILS_DATABASE_URL, soat/db/database_url
-            MAGALU_CR, soat/k8s/soat/k8s/app-secrets
+            MAGALU_CR, soat/k8s/app-secrets
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
