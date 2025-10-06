@@ -67,9 +67,9 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false tfplan
         env:
-          TF_VAR_database_url: ${{ steps.get-db-secret.outputs.RAILS_DATABASE_URL }}
+          TF_VAR_database_url: ${{ steps.get-app-secrets.outputs.RAILS_DATABASE_URL }}
           TF_VAR_magalu_cr_username: ${{ fromJson(steps.get-app-secrets.outputs.MAGALU_CR).docker-username }}
-          TF_VAR_magalu_cr_password: ${{ fromJson(steps.get-app-secrets.outputs.MAGALU_CR).docker-passwor }}
+          TF_VAR_magalu_cr_password: ${{ fromJson(steps.get-app-secrets.outputs.MAGALU_CR).docker-password }}
 
       - name: Get Kubeconfig Output and Save to Secrets Manager
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
