@@ -48,3 +48,18 @@ variable "mercadopago_secret" {
   type        = string
   sensitive   = true
 }
+
+variable "database_url" {
+  type      = string
+  sensitive = true
+}
+
+variable "magalu_cr_username" {
+  type      = string
+  sensitive = true
+}
+
+variable "magalu_cr_password" {
+  type      = string
+  sensitive = true
+}
