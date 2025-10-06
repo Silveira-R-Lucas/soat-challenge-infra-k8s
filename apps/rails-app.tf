@@ -25,6 +25,9 @@ resource "kubernetes_deployment_v1" "rails_app" {
         labels = {
           app = "rails-app"
         }
+        annotations = {
+          "timestamp" = timestamp()
+        }
       }
 
       spec {
@@ -41,6 +44,9 @@ resource "kubernetes_deployment_v1" "rails_app" {
               name = kubernetes_secret_v1.rails_db_secret.metadata[0].name
             }
           }
+
+          command = ["/rails/bin/docker-entrypoint"]
+          args    = ["bin/rails", "server", "-b", "0.0.0.0"]
         }
       }
     }
@@ -62,4 +68,9 @@ resource "kubernetes_service_v1" "rails_app" {
     }
     type = "LoadBalancer"
   }
+}
+
+output "app_url" {
+  description = "A URL de acesso para a aplicação Rails."
+  value       = "http://${kubernetes_service_v1.rails_app.status[0].load_balancer[0].ingress[0].hostname}:3000"
 }
