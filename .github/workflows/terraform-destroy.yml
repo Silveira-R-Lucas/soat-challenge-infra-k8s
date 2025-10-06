@@ -20,6 +20,9 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v3
 
+      - name: 'Setup Terraform'
+        uses: hashicorp/setup-terraform@v2
+
       - name: 'Verify Confirmation'
         run: |
           if [[ "${{ github.event.inputs.confirm_destroy }}" != "destroy" ]]; then
