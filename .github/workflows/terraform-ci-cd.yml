@@ -41,32 +41,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: sa-east-1
-      
-      - name: Get Database Secret from AWS Secrets Manager
-        id: get-app-secrets
-        uses: aws-actions/aws-secretsmanager-get-secrets@v2
-        with:
-          secret-ids: |
-            RAILS_DATABASE_URL, soat/db/database_url
-            MAGALU_CR, soat/k8s/app-secrets
-        
-      - name: 'DEBUG: Echo DATABASE_URL as Base64'
-        run: |
-          echo "O valor de DATABASE_URL codificado em Base64 eh:"
-          echo "${{ steps.get-app-secrets.outputs.RAILS_DATABASE_URL }}" | base64
-          echo "Copie a string acima e decodifique localmente para verificar."
-
-      - name: Parse Secrets with JQ
-        id: parse-secrets
-        run: |
-          SECRETS_JSON='${{ steps.get-app-secrets.outputs.MAGALU_CR }}'
-          echo "MAGALU_USERNAME=$(echo $SECRETS_JSON | jq -r .docker-username)" >> $GITHUB_ENV
-          echo "MAGALU_PASSWORD=$(echo $SECRETS_JSON | jq -r .docker-password)" >> $GITHUB_ENV
-
-      - name: 'Debug: Verify AWS Identity'
-        run: |
-          echo "Verificando a identidade do IAM que o workflow está usando..."
-          aws sts get-caller-identity
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -76,18 +50,10 @@ jobs:
 
       - name: Terraform Plan
         run: terraform plan -input=false -out=tfplan
-        env:
-          TF_VAR_database_url: ${{ steps.get-app-secrets.outputs.RAILS_DATABASE_URL }}
-          TF_VAR_magalu_cr_username: ${{ env.MAGALU_USERNAME }}
-          TF_VAR_magalu_cr_password: ${{ env.MAGALU_PASSWORD }}
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false tfplan
-        env:
-          TF_VAR_database_url: ${{ steps.get-app-secrets.outputs.RAILS_DATABASE_URL }}
-          TF_VAR_magalu_cr_username: ${{ env.MAGALU_USERNAME }}
-          TF_VAR_magalu_cr_password: ${{ env.MAGALU_PASSWORD }}
 
       - name: Get Kubeconfig Output and Save to Secrets Manager
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'

@@ -34,12 +34,6 @@ variable "rails_app_image_tag" {
   default     = "latest"
 }
 
-variable "database_url" {
-  description = "A URL de conexão completa para o banco de dados do Rails."
-  type        = string
-  sensitive   = true
-}
-
 variable "rails_master_key" {
   description = "A RAILS_MASTER_KEY para decifrar as credenciais."
   type        = string
@@ -83,18 +77,6 @@ variable "mercadopago_notification_url" {
 
 variable "mercadopago_secret" {
   description = "O segredo do webhook do Mercado Pago."
-  type        = string
-  sensitive   = true
-}
-
-variable "magalu_cr_username" {
-  description = "Usuário para o registro de contêiner do Magalu Cloud."
-  type        = string
-  sensitive   = true
-}
-
-variable "magalu_cr_password" {
-  description = "Senha/Token para o registro de contêiner do Magalu Cloud."
   type        = string
   sensitive   = true
 }

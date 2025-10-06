@@ -48,21 +48,3 @@ variable "mercadopago_secret" {
   type        = string
   sensitive   = true
 }
-
-variable "database_url" {
-  description = "A URL de conexão completa para o banco de dados do Rails."
-  type        = string
-  sensitive   = true
-}
-
-variable "magalu_cr_username" {
-  description = "Usuário para o registro de contêiner do Magalu Cloud."
-  type        = string
-  sensitive   = true
-}
-
-variable "magalu_cr_password" {
-  description = "Senha/Token para o registro de contêiner do Magalu Cloud."
-  type        = string
-  sensitive   = true
-}

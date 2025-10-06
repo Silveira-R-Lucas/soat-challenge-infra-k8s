@@ -15,7 +15,6 @@ provider "aws" {
   region = var.aws_region
 }
 
-# Módulo para criar a VPC, sub-redes, etc.
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.0.0"
@@ -41,7 +40,6 @@ module "vpc" {
   }
 }
 
-# Módulo para criar o cluster EKS
 module "kubernetes_cluster" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.15.3"
@@ -82,14 +80,12 @@ provider "kubernetes" {
 module "kubernetes_apps" {
   source = "./apps"
 
-  # Adicione este bloco "providers"
   providers = {
     kubernetes = kubernetes.eks
   }
 
   depends_on          = [module.kubernetes_cluster]
   rails_app_image_tag = var.rails_app_image_tag
-  database_url                 = var.database_url
   rails_master_key                = var.rails_master_key
   identify_client_function_url    = var.identify_client_function_url
   create_user_function_url        = var.create_user_function_url
@@ -98,6 +94,4 @@ module "kubernetes_apps" {
   mercadopago_external_pos_id     = var.mercadopago_external_pos_id
   mercadopago_user_id             = var.mercadopago_user_id
   mercadopago_token               = var.mercadopago_token
-  magalu_cr_username              = var.magalu_cr_username
-  magalu_cr_password              = var.magalu_cr_password
 }
