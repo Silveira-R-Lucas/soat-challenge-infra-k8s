@@ -34,12 +34,6 @@ resource "kubernetes_deployment_v1" "rails_app" {
           port {
             container_port = 3000
           }
-
-          env_from {
-            secret_ref {
-              name = kubernetes_secret_v1.rails_app_secrets.metadata[0].name
-            }
-          }
           
           env_from {
             secret_ref {
