@@ -57,6 +57,8 @@ jobs:
 
       - name: 'Passo de Reparo Alternativo: Remover e Re-importar Recurso'
         id: state-fix
+        env:
+          TF_VAR_database_url: ${{ secrets.DATABASE_URL }}
         run: |
           terraform state rm module.kubernetes_apps.kubernetes_deployment_v1.rails_app
           terraform import module.kubernetes_apps.kubernetes_deployment_v1.rails_app default/rails-app-deployment
