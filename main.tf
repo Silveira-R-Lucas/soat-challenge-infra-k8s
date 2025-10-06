@@ -15,6 +15,19 @@ provider "aws" {
   region = var.aws_region
 }
 
+provider "kubernetes" {
+  alias = "eks"
+
+  host                   = module.kubernetes_cluster.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.kubernetes_cluster.cluster_certificate_authority_data)
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", module.kubernetes_cluster.cluster_name]
+  }
+}
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.0.0"
@@ -62,21 +75,6 @@ module "kubernetes_cluster" {
   }
 }
 
-provider "kubernetes" {}
-
-provider "kubernetes" {
-  alias = "eks"
-
-  host                   = module.kubernetes_cluster.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.kubernetes_cluster.cluster_certificate_authority_data)
-
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    args        = ["eks", "get-token", "--cluster-name", module.kubernetes_cluster.cluster_name]
-  }
-}
-
 module "kubernetes_apps" {
   source = "./apps"
 
@@ -84,7 +82,7 @@ module "kubernetes_apps" {
     kubernetes = kubernetes.eks
   }
 
-  ecr_repository_url = module.ecr.ecr_repository_url
+  ecr_repository_url = aws_ecr_repository.rails_app.repository_url
 
   depends_on          = [module.kubernetes_cluster]
   rails_app_image_tag = var.rails_app_image_tag
@@ -97,8 +95,4 @@ module "kubernetes_apps" {
   mercadopago_user_id             = var.mercadopago_user_id
   mercadopago_token               = var.mercadopago_token
   database_url                    = data.aws_secretsmanager_secret_version.db_url.secret_string
-}
-
-module "ecr" {
-  source = "./"
 }
