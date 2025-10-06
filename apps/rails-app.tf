@@ -1,3 +1,8 @@
+variable "ecr_repository_url" {
+  description = "A URL do repositório ECR"
+  type        = string
+}
+
 resource "kubernetes_deployment_v1" "rails_app" {
   metadata {
     name   = "rails-app-deployment"
@@ -23,13 +28,9 @@ resource "kubernetes_deployment_v1" "rails_app" {
       }
 
       spec {
-        image_pull_secrets {
-          name = kubernetes_secret_v1.magalu_registry_secret.metadata[0].name
-        }
-
         container {
           name  = "rails"
-          image = "container-registry.br-se1.magalu.cloud/soat-challenge-2/soat_tech_challenge:${var.rails_app_image_tag}"
+          image = "${var.ecr_repository_url}:${var.rails_app_image_tag}"
 
           port {
             container_port = 3000

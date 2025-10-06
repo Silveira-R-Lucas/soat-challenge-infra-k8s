@@ -84,6 +84,8 @@ module "kubernetes_apps" {
     kubernetes = kubernetes.eks
   }
 
+  ecr_repository_url = module.ecr.ecr_repository_url
+
   depends_on          = [module.kubernetes_cluster]
   rails_app_image_tag = var.rails_app_image_tag
   rails_master_key                = var.rails_master_key
@@ -95,6 +97,8 @@ module "kubernetes_apps" {
   mercadopago_user_id             = var.mercadopago_user_id
   mercadopago_token               = var.mercadopago_token
   database_url                    = data.aws_secretsmanager_secret_version.db_url.secret_string
-  magalu_cr_username              = local.magalu_cr_credentials["docker-username"]
-  magalu_cr_password              = local.magalu_cr_credentials["docker-password"]
+}
+
+module "ecr" {
+  source = "./"
 }
