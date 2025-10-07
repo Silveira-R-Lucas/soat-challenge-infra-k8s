@@ -5,7 +5,3 @@ data "aws_secretsmanager_secret_version" "db_url" {
 data "aws_secretsmanager_secret_version" "magalu_cr" {
   secret_id = "soat/k8s/app-secrets"
 }
-
-locals {
-  magalu_cr_credentials = jsondecode(data.aws_secretsmanager_secret_version.magalu_cr.secret_string)
-}
