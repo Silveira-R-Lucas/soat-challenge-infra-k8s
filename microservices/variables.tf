@@ -49,6 +49,19 @@ variable "mercadopago_secret" {
 variable "database_url" {
   type      = string
   sensitive = true
+  default     = null
+}
+
+variable "redis_url" {
+  type      = string
+  sensitive = true
+  default     = null
+}
+
+variable "mongodb_uri" {
+  type      = string
+  sensitive = true
+  default     = null
 }
 
 variable "app_name" { 
