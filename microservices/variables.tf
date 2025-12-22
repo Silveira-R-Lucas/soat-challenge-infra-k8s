@@ -85,3 +85,8 @@ variable "app_port" {
   type        = number
   description = "A porta que o Service irá expor"
 }
+
+variable "namespace" {
+  type        = string
+  description = "O namespace onde os recursos serão criados"
+}

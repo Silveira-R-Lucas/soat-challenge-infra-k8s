@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 5.0"
+      version = "~> 5.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
@@ -29,7 +29,9 @@ provider "kubernetes" {
 }
 
 module "vpc" {
-  source  = "github.com/terraform-aws-modules/terraform-aws-vpc?ref=cf73787"
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "5.0.0"
+
   name = "soat-challenge-vpc"
   cidr = "10.0.0.0/16"
 
@@ -52,8 +54,8 @@ module "vpc" {
 }
 
 module "kubernetes_cluster" {
-  source  = "github.com/terraform-aws-modules/terraform-aws-eks?ref=c41b582"
-
+  source  = "terraform-aws-modules/eks/aws"
+  version = "19.15.3"
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
 
@@ -83,7 +85,8 @@ module "order_app" {
   database_url                    = local.database_url_val
   identify_client_function_url    = var.identify_client_function_url
   create_user_function_url        = var.create_user_function_url  
-  rabbitmq_url                    = local.rabbitmq_url        
+  rabbitmq_url                    = local.rabbitmq_url      
+  namespace = kubernetes_namespace_v1.soat.metadata[0].name  
 }
 
 resource "kubernetes_service_v1" "payment_endpoint" {
@@ -111,12 +114,13 @@ module "payment_service" {
   app_port                        = 3001
   container_image                 = "${aws_ecr_repository.services["payment-service"].repository_url}:latest"
   mercadopago_secret              = var.mercadopago_secret
-  mercadopago_notification_url = var.deploy_apps ? "http://${kubernetes_service_v1.payment_endpoint[0].status[0].load_balancer[0].ingress[0].hostname}/api/v1/payment_notification" : ""
+  mercadopago_notification_url    = var.deploy_apps ? "http://${kubernetes_service_v1.payment_endpoint[0].status[0].load_balancer[0].ingress[0].hostname}/api/v1/payment_notification" : ""
   mercadopago_external_pos_id     = var.mercadopago_external_pos_id
   mercadopago_user_id             = var.mercadopago_user_id
   mercadopago_token               = var.mercadopago_token
   rabbitmq_url                    = local.rabbitmq_url
   mongodb_uri                     = local.mongodb_url_val
+  namespace = kubernetes_namespace_v1.soat.metadata[0].name
 }
 
 module "kitchen_app" {
@@ -129,6 +133,7 @@ module "kitchen_app" {
   container_image     = "${aws_ecr_repository.services["kitchen-service"].repository_url}:latest"
   redis_url           = local.redis_url_val
   rabbitmq_url        = local.rabbitmq_url
+  namespace = kubernetes_namespace_v1.soat.metadata[0].name
 }
 
 locals {

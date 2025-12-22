@@ -1,7 +1,7 @@
 resource "kubernetes_service_v1" "app_service" {
   metadata {
     name      = "${var.app_name}-service"
-    namespace = kubernetes_namespace_v1.soat.metadata[0].name
+    namespace = var.namespace
     labels = {
       app = var.app_name
     }
