@@ -2,13 +2,56 @@ name: Terraform CI/CD
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      deploy_apps:
+        description: 'Deseja realizar o deploy das aplicações?'
+        required: true
+        type: boolean
+        default: false
+      confirm_action:
+        description: 'Digite "confirmar" para prosseguir com o deploy manual'
+        required: true
+        type: string
   pull_request:
     branches: [ main ]
-
+  
 env:
   SECRET_NAME: "soat/k8s/kubeconfig"
 
 jobs:
+  test-and-analyze:
+    name: 'Test and Analyze'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  
+
+      - name: Checkov Scan
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          framework: terraform
+          soft_fail: true
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   
+        with:
+          args: >
+            -Dsonar.verbose=true
+
+      - name: SonarCloud Quality Gate check
+        uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   terraform:
     name: 'Terraform Plan and Apply EKS'
     runs-on: ubuntu-latest
@@ -18,7 +61,6 @@ jobs:
 
     env:
       TF_VAR_rails_app_image_tag: ${{ vars.RAILS_APP_IMAGE_TAG }}
-      TF_VAR_rails_master_key: ${{ secrets.RAILS_MASTER_KEY }}
       TF_VAR_cluster_name: ${{ vars.CLUSTER_NAME }}
       TF_VAR_cluster_version: ${{ vars.CLUSTER_VERSION }}
       TF_VAR_node_count: ${{ vars.NODE_COUNT }}
@@ -26,10 +68,11 @@ jobs:
       TF_VAR_create_user_function_url: ${{ vars.CREATE_USER_FUNCTION_URL }}
       TF_VAR_identify_client_function_url: ${{ vars.IDENTIFY_CLIENT_FUNCTION_URL }}
       TF_VAR_mercadopago_secret: ${{ secrets.MERCADOPAGO_SECRET }}
-      TF_VAR_mercadopago_notification_url: ${{ vars.MERCADOPAGO_NOTIFICATION_URL }}
       TF_VAR_mercadopago_external_pos_id: ${{ secrets.MERCADOPAGO_EXTERNAL_POS_ID }}
       TF_VAR_mercadopago_user_id: ${{ secrets.MERCADOPAGO_USER_ID }}
-      TF_VAR_mercadopago_token: ${{ secrets.MERCADOPAGO_TOKEN }} 
+      TF_VAR_mercadopago_token: ${{ secrets.MERCADOPAGO_TOKEN }}
+      TF_VAR_rabbitmq_user: ${{ secrets.RABBITMQ_USER }}
+      TF_VAR_rabbitmq_password: ${{ secrets.RABBITMQ_PASS }}
 
     steps:
       - name: Checkout
@@ -48,12 +91,20 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Test
+        run: terraform test -var="deploy_apps=false"
+
       - name: Terraform Plan
-        run: terraform plan -input=false -out=tfplan
+        run: terraform plan -var="deploy_apps=${{ github.event.inputs.deploy_apps || 'false' }}" -input=false -out=tfplan
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve -input=false tfplan
+        if: |
+          github.ref == 'refs/heads/main' && github.event_name == 'push' || 
+          (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm_action == 'confirmar')
+        run: terraform apply -auto-approve -var="deploy_apps=${{ github.event.inputs.deploy_apps || 'false' }}" -input=false tfplan
 
       - name: Get Kubeconfig Output and Save to Secrets Manager
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'

@@ -40,3 +40,6 @@ O deploy é totalmente automatizado via GitHub Actions.
 3.  **Merge:** Após a aprovação e o merge na `main`, o pipeline `terraform-ci-cd.yml` será acionado.
 4.  **Deploy:** O workflow executará `terraform apply -auto-approve`, aplicando as mudanças de infraestrutura na AWS.
 5.  **Saída do Kubeconfig:** Ao final, o pipeline extrai o `kubeconfig` do cluster e o salva no AWS Secrets Manager sob o nome `soat/k8s/kubeconfig` para acesso futuro.
+
+
+###############

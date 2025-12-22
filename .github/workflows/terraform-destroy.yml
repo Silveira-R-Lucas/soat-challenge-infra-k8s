@@ -44,9 +44,7 @@ jobs:
       - name: 'Terraform Destroy'
         id: destroy
         env:
-          TF_VAR_database_url: ${{ secrets.DATABASE_URL }}
           TF_VAR_rails_app_image_tag: ${{ vars.RAILS_APP_IMAGE_TAG }}
-          TF_VAR_rails_master_key: ${{ secrets.RAILS_MASTER_KEY }}
           TF_VAR_cluster_name: ${{ vars.CLUSTER_NAME }}
           TF_VAR_cluster_version: ${{ vars.CLUSTER_VERSION }}
           TF_VAR_node_count: ${{ vars.NODE_COUNT }}
@@ -54,8 +52,9 @@ jobs:
           TF_VAR_create_user_function_url: ${{ vars.CREATE_USER_FUNCTION_URL }}
           TF_VAR_identify_client_function_url: ${{ vars.IDENTIFY_CLIENT_FUNCTION_URL }}
           TF_VAR_mercadopago_secret: ${{ secrets.MERCADOPAGO_SECRET }}
-          TF_VAR_mercadopago_notification_url: ${{ vars.MERCADOPAGO_NOTIFICATION_URL }}
           TF_VAR_mercadopago_external_pos_id: ${{ secrets.MERCADOPAGO_EXTERNAL_POS_ID }}
           TF_VAR_mercadopago_user_id: ${{ secrets.MERCADOPAGO_USER_ID }}
-          TF_VAR_mercadopago_token: ${{ secrets.MERCADOPAGO_TOKEN }} 
-        run: terraform destroy -auto-approve
+          TF_VAR_mercadopago_token: ${{ secrets.MERCADOPAGO_TOKEN }}
+          TF_VAR_rabbitmq_user: ${{ secrets.RABBITMQ_USER }}
+          TF_VAR_rabbitmq_password: ${{ secrets.RABBITMQ_PASS }}
+        run: terraform destroy -auto-approve -var="deploy_apps=true"

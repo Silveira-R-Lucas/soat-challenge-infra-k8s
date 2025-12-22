@@ -22,7 +22,7 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(module.kubernetes_cluster.cluster_certificate_authority_data)
 
   exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
+    api_version = "client.authentication.k8s.io/v1"
     command     = "aws"
     args        = ["eks", "get-token", "--cluster-name", module.kubernetes_cluster.cluster_name]
   }
@@ -56,7 +56,6 @@ module "vpc" {
 module "kubernetes_cluster" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.15.3"
-
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
 
@@ -75,24 +74,68 @@ module "kubernetes_cluster" {
   }
 }
 
-module "kubernetes_apps" {
-  source = "./apps"
-
-  providers = {
-    kubernetes = kubernetes.eks
-  }
-
-  ecr_repository_url = aws_ecr_repository.rails_app.repository_url
-
-  depends_on          = [module.kubernetes_cluster]
-  rails_app_image_tag = var.rails_app_image_tag
-  rails_master_key                = var.rails_master_key
+module "order_app" {
+  count                           = var.deploy_apps ? 1 : 0
+  depends_on                      = [module.kubernetes_cluster]
+  providers                       = { kubernetes = kubernetes.eks }
+  source                          = "./microservices"
+  app_name                        = "order-service"
+  app_port                        = 3000
+  container_image                 = "${aws_ecr_repository.services["order-service"].repository_url}:latest"
+  database_url                    = local.database_url_val
   identify_client_function_url    = var.identify_client_function_url
-  create_user_function_url        = var.create_user_function_url
+  create_user_function_url        = var.create_user_function_url  
+  rabbitmq_url                    = local.rabbitmq_url      
+  namespace = kubernetes_namespace_v1.soat.metadata[0].name  
+}
+
+resource "kubernetes_service_v1" "payment_endpoint" {
+  count     = var.deploy_apps ? 1 : 0
+  provider  = kubernetes.eks
+  metadata { name = "payment-service-lb" }
+  spec {
+    selector = { 
+      app = "payment-service" 
+    }
+    port { 
+      port = 80 
+      target_port = 3001 
+    }
+    type = "LoadBalancer"
+  }
+}
+
+module "payment_service" {
+  count                           = var.deploy_apps ? 1 : 0
+  depends_on                      = [module.kubernetes_cluster, kubernetes_service_v1.payment_endpoint]
+  providers                       = { kubernetes = kubernetes.eks }
+  source                          = "./microservices"
+  app_name                        = "payment-service"
+  app_port                        = 3001
+  container_image                 = "${aws_ecr_repository.services["payment-service"].repository_url}:latest"
   mercadopago_secret              = var.mercadopago_secret
-  mercadopago_notification_url    = var.mercadopago_notification_url
+  mercadopago_notification_url    = var.deploy_apps ? "http://${kubernetes_service_v1.payment_endpoint[0].status[0].load_balancer[0].ingress[0].hostname}/api/v1/payment_notification" : ""
   mercadopago_external_pos_id     = var.mercadopago_external_pos_id
   mercadopago_user_id             = var.mercadopago_user_id
   mercadopago_token               = var.mercadopago_token
-  database_url                    = data.aws_secretsmanager_secret_version.db_url.secret_string
+  rabbitmq_url                    = local.rabbitmq_url
+  mongodb_uri                     = local.mongodb_url_val
+  namespace = kubernetes_namespace_v1.soat.metadata[0].name
+}
+
+module "kitchen_app" {
+  count               = var.deploy_apps ? 1 : 0
+  depends_on          = [module.kubernetes_cluster]
+  providers           = { kubernetes = kubernetes.eks }
+  source              = "./microservices"
+  app_name            = "kitchen-service"
+  app_port            = 3002
+  container_image     = "${aws_ecr_repository.services["kitchen-service"].repository_url}:latest"
+  redis_url           = local.redis_url_val
+  rabbitmq_url        = local.rabbitmq_url
+  namespace = kubernetes_namespace_v1.soat.metadata[0].name
+}
+
+locals {
+  rabbitmq_url = "amqp://${var.rabbitmq_user}:${var.rabbitmq_password}@rabbitmq-service:5672"
 }

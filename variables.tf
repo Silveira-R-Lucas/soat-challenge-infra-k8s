@@ -34,12 +34,6 @@ variable "rails_app_image_tag" {
   default     = "latest"
 }
 
-variable "rails_master_key" {
-  description = "A RAILS_MASTER_KEY para decifrar as credenciais."
-  type        = string
-  sensitive   = true
-}
-
 variable "identify_client_function_url" {
   description = "A URL da Azure Function para identificar clientes."
   type        = string
@@ -70,13 +64,28 @@ variable "mercadopago_external_pos_id" {
   sensitive   = true
 }
 
-variable "mercadopago_notification_url" {
-  description = "url de retorno de resposta Mercado Pago"
-  type        = string
-}
-
 variable "mercadopago_secret" {
   description = "O segredo do webhook do Mercado Pago."
   type        = string
+  sensitive   = true
+}
+
+variable "deploy_apps" {
+  description = "Controla se os recursos do Kubernetes (Apps/RabbitMQ) devem ser criados."
+  type        = bool
+  default     = false
+}
+
+variable "rabbitmq_user" {
+  description = "Usuário do RabbitMQ"
+  type        = string
+  default     = "guest"
+  sensitive   = true
+}
+
+variable "rabbitmq_password" {
+  description = "Senha do RabbitMQ"
+  type        = string
+  default     = "guest"
   sensitive   = true
 }
