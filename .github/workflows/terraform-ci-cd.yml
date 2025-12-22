@@ -2,9 +2,20 @@ name: Terraform CI/CD
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      deploy_apps:
+        description: 'Deseja realizar o deploy das aplicações (Fase 2)?'
+        required: true
+        type: boolean
+        default: false
+      confirm_action:
+        description: 'Digite "confirmar" para prosseguir com o deploy manual'
+        required: true
+        type: string
   pull_request:
     branches: [ main ]
-
+  
 env:
   SECRET_NAME: "soat/k8s/kubeconfig"
 
@@ -48,11 +59,13 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan -input=false -out=tfplan
+        run: terraform plan -var="deploy_apps=${{ github.event.inputs.deploy_apps || 'false' }}" -input=false -out=tfplan
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve -input=false tfplan
+        if: |
+          github.ref == 'refs/heads/main' && github.event_name == 'push' || 
+          (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm_action == 'confirmar')
+        run: terraform apply -auto-approve -var="deploy_apps=${{ github.event.inputs.deploy_apps || 'false' }}" -input=false tfplan
 
       - name: Get Kubeconfig Output and Save to Secrets Manager
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
