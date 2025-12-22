@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 0  
 
       - name: Checkov Scan
-        uses: bridgecrewio/checkov-action@master
+        uses: bridgecrewio/checkov-action@v12
         with:
           directory: .
           framework: terraform
@@ -96,7 +96,7 @@ jobs:
 
       - name: Terraform Test
         run: terraform test -var="deploy_apps=false"
-        
+
       - name: Terraform Plan
         run: terraform plan -var="deploy_apps=${{ github.event.inputs.deploy_apps || 'false' }}" -input=false -out=tfplan
 

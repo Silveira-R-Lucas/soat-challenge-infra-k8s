@@ -29,9 +29,7 @@ provider "kubernetes" {
 }
 
 module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "5.0.0"
-
+  source  = "github.com/terraform-aws-modules/terraform-aws-vpc?ref=cf73787"
   name = "soat-challenge-vpc"
   cidr = "10.0.0.0/16"
 
@@ -54,8 +52,7 @@ module "vpc" {
 }
 
 module "kubernetes_cluster" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "19.15.3"
+  source  = "github.com/terraform-aws-modules/terraform-aws-eks?ref=c41b582"
 
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version

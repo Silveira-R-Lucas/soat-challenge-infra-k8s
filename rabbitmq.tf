@@ -35,7 +35,7 @@ resource "kubernetes_deployment_v1" "rabbitmq" {
               }
             }
           }
-          
+
           env {
             name = "RABBITMQ_DEFAULT_PASS"
             value_from {
@@ -70,7 +70,7 @@ resource "kubernetes_service_v1" "rabbitmq_service" {
 resource "kubernetes_secret_v1" "rabbitmq_credentials" {
   metadata {
     name      = "rabbitmq-credentials"
-    namespace = "default"
+    namespace = kubernetes_namespace_v1.soat.metadata[0].name
   }
 
   data = {

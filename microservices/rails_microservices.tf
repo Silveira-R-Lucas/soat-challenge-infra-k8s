@@ -19,6 +19,11 @@ resource "kubernetes_deployment_v1" "rails_microservices" {
       }
 
       spec {
+        security_context {
+          run_as_non_root = true
+          run_as_user     = 1000
+        }
+
         container {
           image = var.container_image
           name  = var.app_name
@@ -77,6 +82,39 @@ resource "kubernetes_deployment_v1" "rails_microservices" {
             content {
               name  = "DATABASE_URL"
               value = var.database_url
+            }
+          }
+
+          resources {
+            limits = {
+              cpu    = "500m"
+              memory = "512Mi"
+            }
+            requests = {
+              cpu    = "250m"
+              memory = "256Mi"
+            }
+          }
+
+          liveness_probe {
+            http_get {
+              path = "/health"
+              port = var.app_port
+            }
+            initial_delay_seconds = 30
+          }
+
+          readiness_probe {
+            http_get {
+              path = "/health"
+              port = var.app_port
+            }
+          }
+
+          security_context {
+            allow_privilege_escalation = false
+            capabilities {
+              drop = ["ALL"]
             }
           }
         }
