@@ -83,7 +83,7 @@ module "order_app" {
   app_name                        = "order-service"
   app_port                        = 3000
   container_image                 = "${aws_ecr_repository.services["order-service"].repository_url}:latest"
-  database_url                    = data.aws_secretsmanager_secret_version.db_url.secret_string
+  database_url                    = local.database_url_val
   identify_client_function_url    = var.identify_client_function_url
   create_user_function_url        = var.create_user_function_url  
   rabbitmq_url                    = local.rabbitmq_url        
@@ -119,7 +119,7 @@ module "payment_service" {
   mercadopago_user_id             = var.mercadopago_user_id
   mercadopago_token               = var.mercadopago_token
   rabbitmq_url                    = local.rabbitmq_url
-  mongodb_uri                    = data.aws_secretsmanager_secret_version.mongodb_url.secret_string
+  mongodb_uri                     = local.mongodb_url_val
 }
 
 module "kitchen_app" {
@@ -130,7 +130,7 @@ module "kitchen_app" {
   app_name            = "kitchen-service"
   app_port            = 3002
   container_image     = "${aws_ecr_repository.services["kitchen-service"].repository_url}:latest"
-  redis_url        = data.aws_secretsmanager_secret_version.redis_url.secret_string 
+  redis_url           = local.redis_url_val
   rabbitmq_url        = local.rabbitmq_url
 }
 
