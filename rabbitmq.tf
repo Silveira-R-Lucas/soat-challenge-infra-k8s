@@ -68,6 +68,8 @@ resource "kubernetes_service_v1" "rabbitmq_service" {
 }
 
 resource "kubernetes_secret_v1" "rabbitmq_credentials" {
+  provider = kubernetes.eks
+  
   metadata {
     name      = "rabbitmq-credentials"
     namespace = kubernetes_namespace_v1.soat.metadata[0].name
