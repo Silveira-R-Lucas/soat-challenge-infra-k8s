@@ -37,7 +37,6 @@ data "aws_secretsmanager_secret_version" "mongodb_url" {
 data "aws_secretsmanager_secrets" "payment_tag_search" {
   filter {
     name   = "name"
-    # DICA: Certifique-se de que este nome bate EXATAMENTE com o do seu CI/CD
     values = ["soat/payment/image_tag"] 
   }
 }
