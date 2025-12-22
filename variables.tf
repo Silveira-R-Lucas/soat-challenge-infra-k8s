@@ -64,11 +64,6 @@ variable "mercadopago_external_pos_id" {
   sensitive   = true
 }
 
-variable "mercadopago_notification_url" {
-  description = "url de retorno de resposta Mercado Pago"
-  type        = string
-}
-
 variable "mercadopago_secret" {
   description = "O segredo do webhook do Mercado Pago."
   type        = string
@@ -79,4 +74,18 @@ variable "deploy_apps" {
   description = "Controla se os recursos do Kubernetes (Apps/RabbitMQ) devem ser criados."
   type        = bool
   default     = false
+}
+
+variable "rabbitmq_user" {
+  description = "Usuário do RabbitMQ"
+  type        = string
+  default     = "guest"
+  sensitive   = true
+}
+
+variable "rabbitmq_password" {
+  description = "Senha do RabbitMQ"
+  type        = string
+  default     = "guest"
+  sensitive   = true
 }

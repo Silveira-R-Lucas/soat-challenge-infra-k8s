@@ -52,8 +52,9 @@ jobs:
           TF_VAR_create_user_function_url: ${{ vars.CREATE_USER_FUNCTION_URL }}
           TF_VAR_identify_client_function_url: ${{ vars.IDENTIFY_CLIENT_FUNCTION_URL }}
           TF_VAR_mercadopago_secret: ${{ secrets.MERCADOPAGO_SECRET }}
-          TF_VAR_mercadopago_notification_url: ${{ vars.MERCADOPAGO_NOTIFICATION_URL }}
           TF_VAR_mercadopago_external_pos_id: ${{ secrets.MERCADOPAGO_EXTERNAL_POS_ID }}
           TF_VAR_mercadopago_user_id: ${{ secrets.MERCADOPAGO_USER_ID }}
-          TF_VAR_mercadopago_token: ${{ secrets.MERCADOPAGO_TOKEN }} 
+          TF_VAR_mercadopago_token: ${{ secrets.MERCADOPAGO_TOKEN }}
+          TF_VAR_rabbitmq_user: ${{ secrets.RABBITMQ_USER }}
+          TF_VAR_rabbitmq_password: ${{ secrets.RABBITMQ_PASS }}
         run: terraform destroy -auto-approve -var="deploy_apps=true"

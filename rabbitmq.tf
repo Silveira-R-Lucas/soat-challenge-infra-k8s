@@ -27,12 +27,23 @@ resource "kubernetes_deployment_v1" "rabbitmq" {
           }
 
           env {
-            name  = "RABBITMQ_DEFAULT_USER"
-            value = "guest"
+            name = "RABBITMQ_DEFAULT_USER"
+            value_from {
+              secret_key_ref {
+                name = kubernetes_secret_v1.rabbitmq_credentials.metadata[0].name
+                key  = "username"
+              }
+            }
           }
+          
           env {
-            name  = "RABBITMQ_DEFAULT_PASS"
-            value = "guest"
+            name = "RABBITMQ_DEFAULT_PASS"
+            value_from {
+              secret_key_ref {
+                name = kubernetes_secret_v1.rabbitmq_credentials.metadata[0].name
+                key  = "password"
+              }
+            }
           }
         }
       }
@@ -54,4 +65,18 @@ resource "kubernetes_service_v1" "rabbitmq_service" {
     }
     type = "ClusterIP"
   }
+}
+
+resource "kubernetes_secret_v1" "rabbitmq_credentials" {
+  metadata {
+    name      = "rabbitmq-credentials"
+    namespace = "default"
+  }
+
+  data = {
+    username = var.rabbitmq_user
+    password = var.rabbitmq_password
+  }
+
+  type = "Opaque"
 }

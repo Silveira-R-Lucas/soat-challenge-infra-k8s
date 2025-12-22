@@ -135,5 +135,5 @@ module "kitchen_app" {
 }
 
 locals {
-  rabbitmq_url = "amqp://guest:guest@rabbitmq-service:5672"
+  rabbitmq_url = "amqp://${var.rabbitmq_user}:${var.rabbitmq_password}@rabbitmq-service:5672"
 }
