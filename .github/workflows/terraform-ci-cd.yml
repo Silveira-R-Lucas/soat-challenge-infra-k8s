@@ -20,6 +20,26 @@ env:
   SECRET_NAME: "soat/k8s/kubeconfig"
 
 jobs:
+  test-and-analyze:
+    name: 'Test and Analyze'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   
+        with:
+          args: >
+            -Dsonar.verbose=true
+
+      - name: SonarCloud Quality Gate check
+        uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   terraform:
     name: 'Terraform Plan and Apply EKS'
     runs-on: ubuntu-latest
