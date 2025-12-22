@@ -1,18 +1,14 @@
-resource "aws_ecr_repository" "rails_app" {
-  name                 = "soat-challenge/rails-app"
+resource "aws_ecr_repository" "services" {
+  for_each = toset(["kitchen-service", "payment-service", "order-service"])
+  
+  name                 = "soat-challenge/${each.key}"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
     scan_on_push = true
   }
-
-  tags = {
-    Project = "SOAT Challenge"
-    ManagedBy = "Terraform"
-  }
 }
 
-output "ecr_repository_url" {
-  description = "A URL do repositório ECR da aplicação."
-  value       = aws_ecr_repository.rails_app.repository_url
+output "ecr_repository_urls" {
+  value = { for k, v in aws_ecr_repository.services : k => v.repository_url }
 }

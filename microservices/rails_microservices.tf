@@ -1,0 +1,62 @@
+resource "kubernetes_deployment_v1" "rails_microservices" {
+  metadata {
+    name = "${var.app_name}-deployment"
+    labels = { app = var.app_name }
+  }
+
+  spec {
+    replicas = var.replicas
+    selector {
+      match_labels = { app = var.app_name }
+    }
+
+    template {
+      metadata {
+        labels = { app = var.app_name }
+        annotations = {
+          "timestamp" = timestamp()
+        }
+      }
+
+      spec {
+        container {
+          image = var.container_image
+          name  = var.app_name
+          port {
+            container_port = var.app_port
+          }
+          
+          env_from {
+            secret_ref {
+              name = kubernetes_secret_v1.rails_db_secret.metadata[0].name
+            }
+          }
+
+          env {
+            name  = "MERCADOPAGO_NOTIFICATION_URL"
+            value = var.mercadopago_notification_url
+          }
+
+          env {
+            name  = "RABBITMQ_URL"
+            value = var.rabbitmq_url
+          }
+
+          env {
+            name  = "RAILS_MASTER_KEY"
+            value = data.aws_secretsmanager_secret_version.app_master_key_val.secret_string
+          }
+
+          env {
+            name  = "RAILS_ENV"
+            value = "production"
+          }
+          env {
+            name  = "RAILS_SERVE_STATIC_FILES"
+            value = "true"
+          }
+        }
+      }
+    }
+  }
+}
