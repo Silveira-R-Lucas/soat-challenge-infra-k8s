@@ -81,7 +81,7 @@ module "order_app" {
   source                          = "./microservices"
   app_name                        = "order-service"
   app_port                        = 3000
-  container_image                 = "${aws_ecr_repository.services["order-service"].repository_url}:latest"
+  container_image                 = "${aws_ecr_repository.services["order-service"].repository_url}:${local.order_tag}"
   database_url                    = local.database_url_val
   identify_client_function_url    = var.identify_client_function_url
   create_user_function_url        = var.create_user_function_url  
@@ -112,7 +112,7 @@ module "payment_service" {
   source                          = "./microservices"
   app_name                        = "payment-service"
   app_port                        = 3001
-  container_image                 = "${aws_ecr_repository.services["payment-service"].repository_url}:latest"
+  container_image                 = "${aws_ecr_repository.services["payment-service"].repository_url}:${local.payment_tag}"
   mercadopago_secret              = var.mercadopago_secret
   mercadopago_notification_url    = var.deploy_apps ? "http://${kubernetes_service_v1.payment_endpoint[0].status[0].load_balancer[0].ingress[0].hostname}/api/v1/payment_notification" : ""
   mercadopago_external_pos_id     = var.mercadopago_external_pos_id
@@ -130,7 +130,7 @@ module "kitchen_app" {
   source              = "./microservices"
   app_name            = "kitchen-service"
   app_port            = 3002
-  container_image     = "${aws_ecr_repository.services["kitchen-service"].repository_url}:latest"
+  container_image     = "${aws_ecr_repository.services["kitchen-service"].repository_url}:${local.kitchen_tag}"
   redis_url           = local.redis_url_val
   rabbitmq_url        = local.rabbitmq_url
   namespace = kubernetes_namespace_v1.soat.metadata[0].name
