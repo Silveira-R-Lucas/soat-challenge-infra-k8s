@@ -55,6 +55,30 @@ resource "kubernetes_deployment_v1" "rails_microservices" {
             name  = "RAILS_SERVE_STATIC_FILES"
             value = "true"
           }
+
+          dynamic "env" {
+            for_each = var.redis_url != null ? [1] : []
+            content {
+              name  = "REDIS_URL"
+              value = var.redis_url
+            }
+          }
+
+          dynamic "env" {
+            for_each = var.mongodb_uri != null ? [1] : []
+            content {
+              name  = "MONGODB_URI"
+              value = var.mongodb_uri
+            }
+          }
+
+          dynamic "env" {
+            for_each = var.database_url != null ? [1] : []
+            content {
+              name  = "DATABASE_URL"
+              value = var.database_url
+            }
+          }
         }
       }
     }
