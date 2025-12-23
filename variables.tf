@@ -28,12 +28,6 @@ variable "node_flavor" {
   default     = "t3.small"
 }
 
-variable "rails_app_image_tag" {
-  description = "A tag da imagem Docker da aplicação Rails."
-  type        = string
-  default     = "latest"
-}
-
 variable "identify_client_function_url" {
   description = "A URL da Azure Function para identificar clientes."
   type        = string
