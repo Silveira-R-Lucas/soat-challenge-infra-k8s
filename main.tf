@@ -92,7 +92,7 @@ module "order_app" {
 resource "kubernetes_service_v1" "payment_endpoint" {
   count     = var.deploy_apps ? 1 : 0
   provider  = kubernetes.eks
-  
+
   metadata { 
     name = "payment-service-lb"
     namespace = kubernetes_namespace_v1.soat.metadata[0].name
@@ -116,7 +116,7 @@ module "payment_service" {
   providers                       = { kubernetes = kubernetes.eks }
   source                          = "./microservices"
   app_name                        = "payment-service"
-  app_port                        = 3000
+  app_port                        = 3001
   container_image                 = "${aws_ecr_repository.services["payment-service"].repository_url}:${local.payment_tag}"
   mercadopago_secret              = var.mercadopago_secret
   mercadopago_notification_url    = var.deploy_apps ? "http://${kubernetes_service_v1.payment_endpoint[0].status[0].load_balancer[0].ingress[0].hostname}/api/v1/payment_notification" : ""
