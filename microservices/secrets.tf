@@ -3,7 +3,8 @@ resource "kubernetes_secret_v1" "rails_db_secret" {
     name = "${var.app_name}db-secret"
     namespace = var.namespace
   }
-  data = {
-    DATABASE_URL = var.database_url
+
+  stringData = {
+    DATABASE_URL = var.database_url 
   }
 }

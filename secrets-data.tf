@@ -37,37 +37,37 @@ data "aws_secretsmanager_secret_version" "mongodb_url" {
 data "aws_secretsmanager_secrets" "payment_tag_search" {
   filter {
     name   = "name"
-    values = ["soat/payment/image_tag"] 
+    values = ["soat/payment-service/image_tag"] 
   }
 }
 
 data "aws_secretsmanager_secret_version" "payment_tag_val" {
   count     = length(data.aws_secretsmanager_secrets.payment_tag_search.names) > 0 ? 1 : 0
-  secret_id = "soat/payment/image_tag"
+  secret_id = "soat/payment-service/image_tag"
 }
 
 data "aws_secretsmanager_secrets" "kitchen_tag_search" {
   filter {
     name   = "name"
-    values = ["soat/kitchen/image_tag"]
+    values = ["soat/kitchen-service/image_tag"]
   }
 }
 
 data "aws_secretsmanager_secret_version" "kitchen_tag_val" {
   count     = length(data.aws_secretsmanager_secrets.kitchen_tag_search.names) > 0 ? 1 : 0
-  secret_id = "soat/kitchen/image_tag"
+  secret_id = "soat/kitchen-service/image_tag"
 }
 
 data "aws_secretsmanager_secrets" "order_tag_search" {
   filter {
     name   = "name"
-    values = ["soat/order/image_tag"]
+    values = ["soat/order-service/image_tag"]
   }
 }
 
 data "aws_secretsmanager_secret_version" "order_tag_val" {
   count     = length(data.aws_secretsmanager_secrets.order_tag_search.names) > 0 ? 1 : 0
-  secret_id = "soat/order/image_tag"
+  secret_id = "soat/order-service/image_tag"
 }
 
 locals {
