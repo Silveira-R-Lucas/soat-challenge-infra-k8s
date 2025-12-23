@@ -30,6 +30,12 @@ resource "kubernetes_deployment_v1" "rails_microservices" {
         container {
           image = var.container_image
           name  = var.app_name
+
+          volume_mount {
+            name       = "tmp-volume"
+            mount_path = "/app/tmp"
+          }
+
           port {
             container_port = var.app_port
           }
@@ -114,18 +120,13 @@ resource "kubernetes_deployment_v1" "rails_microservices" {
               drop = ["ALL"]
             }
           }
-
-          volume_mount {
-            name       = "tmp-volume"
-            mount_path = "/app/tmp"
-          }
         }
-      }
-    }
 
-    volume {
+        volume {
           name = "tmp-volume"
           empty_dir {}
         }
+      }
+    }
   }
 }
