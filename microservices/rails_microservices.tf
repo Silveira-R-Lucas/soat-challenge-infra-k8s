@@ -1,4 +1,6 @@
 resource "kubernetes_deployment_v1" "rails_microservices" {
+  depends_on = [data.aws_secretsmanager_secret_version.app_master_key_val]
+  
   metadata {
     name = "${var.app_name}-deployment"
     labels = { app = var.app_name }
@@ -29,12 +31,6 @@ resource "kubernetes_deployment_v1" "rails_microservices" {
           name  = var.app_name
           port {
             container_port = var.app_port
-          }
-          
-          env_from {
-            secret_ref {
-              name = kubernetes_secret_v1.rails_db_secret.metadata[0].name
-            }
           }
 
           env {

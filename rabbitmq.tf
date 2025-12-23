@@ -56,7 +56,11 @@ resource "kubernetes_service_v1" "rabbitmq_service" {
   count     = var.deploy_apps ? 1 : 0
   provider  = kubernetes.eks
 
-  metadata { name = "rabbitmq-service" }
+  metadata { 
+    name = "rabbitmq-service"
+    namespace = kubernetes_namespace_v1.soat.metadata[0].name
+  }
+  
   spec {
     selector = { app = "rabbitmq" }
     port {
