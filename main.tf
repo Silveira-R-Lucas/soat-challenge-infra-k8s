@@ -92,14 +92,19 @@ module "order_app" {
 resource "kubernetes_service_v1" "payment_endpoint" {
   count     = var.deploy_apps ? 1 : 0
   provider  = kubernetes.eks
-  metadata { name = "payment-service-lb" }
+  
+  metadata { 
+    name = "payment-service-lb"
+    namespace = kubernetes_namespace_v1.soat.metadata[0].name
+  }
+
   spec {
     selector = { 
       app = "payment-service" 
     }
     port { 
       port = 80 
-      target_port = 3001 
+      target_port = 3000
     }
     type = "LoadBalancer"
   }
@@ -111,7 +116,7 @@ module "payment_service" {
   providers                       = { kubernetes = kubernetes.eks }
   source                          = "./microservices"
   app_name                        = "payment-service"
-  app_port                        = 3001
+  app_port                        = 3000
   container_image                 = "${aws_ecr_repository.services["payment-service"].repository_url}:${local.payment_tag}"
   mercadopago_secret              = var.mercadopago_secret
   mercadopago_notification_url    = var.deploy_apps ? "http://${kubernetes_service_v1.payment_endpoint[0].status[0].load_balancer[0].ingress[0].hostname}/api/v1/payment_notification" : ""
@@ -129,7 +134,7 @@ module "kitchen_app" {
   providers           = { kubernetes = kubernetes.eks }
   source              = "./microservices"
   app_name            = "kitchen-service"
-  app_port            = 3002
+  app_port            = 3000
   container_image     = "${aws_ecr_repository.services["kitchen-service"].repository_url}:${local.kitchen_tag}"
   redis_url           = local.redis_url_val
   rabbitmq_url        = local.rabbitmq_url
