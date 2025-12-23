@@ -101,10 +101,9 @@ resource "kubernetes_deployment_v1" "rails_microservices" {
 
           liveness_probe {
             http_get {
-              path = "/health"
+              path = "/"
               port = var.app_port
             }
-            initial_delay_seconds = 30
           }
 
           readiness_probe {
