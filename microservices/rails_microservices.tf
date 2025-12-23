@@ -3,6 +3,7 @@ resource "kubernetes_deployment_v1" "rails_microservices" {
   
   metadata {
     name = "${var.app_name}-deployment"
+    namespace = var.namespace
     labels = { app = var.app_name }
   }
 
@@ -113,8 +114,18 @@ resource "kubernetes_deployment_v1" "rails_microservices" {
               drop = ["ALL"]
             }
           }
+
+          volume_mount {
+            name       = "tmp-volume"
+            mount_path = "/app/tmp"
+          }
         }
       }
     }
+
+    volume {
+          name = "tmp-volume"
+          empty_dir {}
+        }
   }
 }
