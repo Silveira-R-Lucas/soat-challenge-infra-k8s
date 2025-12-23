@@ -76,7 +76,7 @@ resource "kubernetes_secret_v1" "rabbitmq_credentials" {
     namespace = kubernetes_namespace_v1.soat.metadata[0].name
   }
 
-  stringData = {
+  data = {
     username = var.rabbitmq_user
     password = var.rabbitmq_password
   }
