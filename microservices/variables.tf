@@ -108,3 +108,9 @@ variable "run_migrations" {
   default     = false
   description = "Define se deve executar as migrações do Rails"
 }
+
+variable "master_key_app_name" {
+  type        = string
+  default     = null
+  description = "Nome do app original para buscar a Master Key"
+}

@@ -92,18 +92,19 @@ module "order_app" {
 }
 
 module "order_consumer" {
-  count           = var.deploy_apps ? 1 : 0
-  providers       = { kubernetes = kubernetes.eks }
-  source          = "./microservices"
-  app_name        = "order-consumer"
-  app_port        = 3000
-  container_image = "${aws_ecr_repository.services["order-service"].repository_url}:${local.order_tag}"
-  database_url    = local.database_url_val
-  rabbitmq_url    = local.rabbitmq_url
-  namespace       = kubernetes_namespace_v1.soat.metadata[0].name
-  use_tcp_probe   = true
-  command         = ["/bin/sh", "-c", "bundle exec rails runner 'StartPagamentoConsumer.run'"]
-  run_migrations  = false
+  count               = var.deploy_apps ? 1 : 0
+  providers           = { kubernetes = kubernetes.eks }
+  source              = "./microservices"
+  app_name            = "order-consumer"
+  master_key_app_name = "order-service"
+  app_port            = 3000
+  container_image     = "${aws_ecr_repository.services["order-service"].repository_url}:${local.order_tag}"
+  database_url        = local.database_url_val
+  rabbitmq_url        = local.rabbitmq_url
+  namespace           = kubernetes_namespace_v1.soat.metadata[0].name
+  use_tcp_probe       = true
+  command             = ["/bin/sh", "-c", "bundle exec rails runner 'StartPagamentoConsumer.run'"]
+  run_migrations      = false
 }
 
 resource "kubernetes_service_v1" "payment_endpoint" {
@@ -144,22 +145,23 @@ module "payment_service" {
   mongodb_uri                     = local.mongodb_url_val
   namespace                       = kubernetes_namespace_v1.soat.metadata[0].name
   use_tcp_probe                   = false
-  run_migrations                  = true
+  run_migrations                  = false
 }
 
 module "payment_consumer" {
-  count           = var.deploy_apps ? 1 : 0
-  providers       = { kubernetes = kubernetes.eks }
-  source          = "./microservices"
-  app_name        = "payment-consumer"
-  app_port        = 3000
-  container_image = "${aws_ecr_repository.services["payment-service"].repository_url}:${local.payment_tag}"
-  database_url    = local.database_url_val
-  rabbitmq_url    = local.rabbitmq_url
-  namespace       = kubernetes_namespace_v1.soat.metadata[0].name
-  use_tcp_probe   = true
-  command         = ["/bin/sh", "-c", "bundle exec rails runner 'StartPagamentoConsumer.run'"]
-  run_migrations  = false
+  count               = var.deploy_apps ? 1 : 0
+  providers           = { kubernetes = kubernetes.eks }
+  source              = "./microservices"
+  app_name            = "payment-consumer"
+  master_key_app_name = "payment-service"
+  app_port            = 3000
+  container_image     = "${aws_ecr_repository.services["payment-service"].repository_url}:${local.payment_tag}"
+  database_url        = local.database_url_val
+  rabbitmq_url        = local.rabbitmq_url
+  namespace           = kubernetes_namespace_v1.soat.metadata[0].name
+  use_tcp_probe       = true
+  command             = ["/bin/sh", "-c", "bundle exec rails runner 'StartPagamentoConsumer.run'"]
+  run_migrations      = false
 }
 
 
@@ -175,22 +177,23 @@ module "kitchen_app" {
   rabbitmq_url        = local.rabbitmq_url
   namespace           = kubernetes_namespace_v1.soat.metadata[0].name
   use_tcp_probe       = false
-  run_migrations      = true
+  run_migrations      = false
 }
 
 module "kitchen_consumer" {
-  count           = var.deploy_apps ? 1 : 0
-  providers       = { kubernetes = kubernetes.eks }
-  source          = "./microservices"
-  app_name        = "kitchen-consumer"
-  app_port        = 3000
-  container_image = "${aws_ecr_repository.services["kitchen-service"].repository_url}:${local.kitchen_tag}"
-  database_url    = local.database_url_val
-  rabbitmq_url    = local.rabbitmq_url
-  namespace       = kubernetes_namespace_v1.soat.metadata[0].name
-  use_tcp_probe   = true
-  command         = ["/bin/sh", "-c", "bundle exec rails runner 'StartPagamentoConsumer.run'"]
-  run_migrations  = false
+  count               = var.deploy_apps ? 1 : 0
+  providers           = { kubernetes = kubernetes.eks }
+  source              = "./microservices"
+  app_name            = "kitchen-consumer"
+  master_key_app_name = "kitchen-service"
+  app_port            = 3000
+  container_image     = "${aws_ecr_repository.services["kitchen-service"].repository_url}:${local.kitchen_tag}"
+  database_url        = local.database_url_val
+  rabbitmq_url        = local.rabbitmq_url
+  namespace           = kubernetes_namespace_v1.soat.metadata[0].name
+  use_tcp_probe       = true
+  command             = ["/bin/sh", "-c", "bundle exec rails runner 'StartPagamentoConsumer.run'"]
+  run_migrations      = false
 }
 
 locals {
