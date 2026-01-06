@@ -90,3 +90,15 @@ variable "namespace" {
   type        = string
   description = "O namespace onde os recursos serão criados"
 }
+
+variable "command" {
+  type        = list(string)
+  default     = null
+  description = "Comando customizado para o container (usado para o consumer)"
+}
+
+variable "use_tcp_probe" {
+  type        = bool
+  default     = false
+  description = "Se verdadeiro, utiliza tcp_socket em vez de http_get nas probes"
+}
