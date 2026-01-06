@@ -88,6 +88,7 @@ module "order_app" {
   rabbitmq_url                    = local.rabbitmq_url      
   namespace                       = kubernetes_namespace_v1.soat.metadata[0].name  
   use_tcp_probe                   = false
+  run_migrations                  = true
 }
 
 module "order_consumer" {
@@ -102,6 +103,7 @@ module "order_consumer" {
   namespace       = kubernetes_namespace_v1.soat.metadata[0].name
   use_tcp_probe   = true
   command         = ["/bin/sh", "-c", "bundle exec rails runner 'StartPagamentoConsumer.run'"]
+  run_migrations  = false
 }
 
 resource "kubernetes_service_v1" "payment_endpoint" {
@@ -142,6 +144,7 @@ module "payment_service" {
   mongodb_uri                     = local.mongodb_url_val
   namespace                       = kubernetes_namespace_v1.soat.metadata[0].name
   use_tcp_probe                   = false
+  run_migrations                  = true
 }
 
 module "payment_consumer" {
@@ -156,6 +159,7 @@ module "payment_consumer" {
   namespace       = kubernetes_namespace_v1.soat.metadata[0].name
   use_tcp_probe   = true
   command         = ["/bin/sh", "-c", "bundle exec rails runner 'StartPagamentoConsumer.run'"]
+  run_migrations  = false
 }
 
 
@@ -171,6 +175,7 @@ module "kitchen_app" {
   rabbitmq_url        = local.rabbitmq_url
   namespace           = kubernetes_namespace_v1.soat.metadata[0].name
   use_tcp_probe       = false
+  run_migrations      = true
 }
 
 module "kitchen_consumer" {
@@ -185,6 +190,7 @@ module "kitchen_consumer" {
   namespace       = kubernetes_namespace_v1.soat.metadata[0].name
   use_tcp_probe   = true
   command         = ["/bin/sh", "-c", "bundle exec rails runner 'StartPagamentoConsumer.run'"]
+  run_migrations  = false
 }
 
 locals {

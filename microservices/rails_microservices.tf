@@ -27,23 +27,26 @@ resource "kubernetes_deployment_v1" "rails_microservices" {
           run_as_user     = 1000
         }
 
-        init_container {
-          name  = "migrate"
-          image = var.container_image
-          command = ["/bin/sh", "-c", "bundle exec rails db:migrate"]
-          
-          env_from {
-            secret_ref {
-              name = kubernetes_secret_v1.rails_db_secret.metadata[0].name
+        dynamic "init_container" {
+          for_each = var.run_migrations ? [1] : []
+          content {
+            name    = "migrate"
+            image   = var.container_image
+            command = ["/bin/sh", "-c", "bundle exec rails db:migrate"]
+            
+            env_from {
+              secret_ref {
+                name = kubernetes_secret_v1.rails_db_secret[0].metadata[0].name
+              }
             }
-          }
-          env {
-            name  = "RAILS_ENV"
-            value = "production"
-          }
-          env {
-            name  = "RAILS_MASTER_KEY"
-            value = data.aws_secretsmanager_secret_version.app_master_key_val.secret_string
+            env {
+              name  = "RAILS_ENV"
+              value = "production"
+            }
+            env {
+              name  = "RAILS_MASTER_KEY"
+              value = data.aws_secretsmanager_secret_version.app_master_key_val.secret_string
+            }
           }
         }
 
@@ -59,6 +62,15 @@ resource "kubernetes_deployment_v1" "rails_microservices" {
 
           port {
             container_port = var.app_port
+          }
+
+          dynamic "env_from" {
+            for_each = var.database_url != null ? [1] : []
+            content {
+              secret_ref {
+                name = kubernetes_secret_v1.rails_db_secret[0].metadata[0].name
+              }
+            }
           }
 
           env {

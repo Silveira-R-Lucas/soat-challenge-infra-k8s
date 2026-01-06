@@ -102,3 +102,9 @@ variable "use_tcp_probe" {
   default     = false
   description = "Se verdadeiro, utiliza tcp_socket em vez de http_get nas probes"
 }
+
+variable "run_migrations" {
+  type        = bool
+  default     = false
+  description = "Define se deve executar as migrações do Rails"
+}
