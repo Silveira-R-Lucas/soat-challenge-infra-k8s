@@ -114,3 +114,9 @@ variable "master_key_app_name" {
   default     = null
   description = "Nome do app original para buscar a Master Key"
 }
+
+variable "enable_probes" {
+  type        = bool
+  default     = true
+  description = "Define se as liveness e readiness probes devem ser criadas"
+}

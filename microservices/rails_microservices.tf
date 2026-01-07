@@ -132,44 +132,46 @@ resource "kubernetes_deployment_v1" "rails_microservices" {
             }
           }
 
-          liveness_probe {
-            dynamic "http_get" {
-              for_each = var.use_tcp_probe ? [] : [1]
-              content {
-                path = "/404.html"
-                port = var.app_port
+          dynamic "liveness_probe" {
+            for_each = var.enable_probes ? [1] : []
+            content {
+              dynamic "http_get" {
+                for_each = var.use_tcp_probe ? [] : [1]
+                content {
+                  path = "/404.html"
+                  port = var.app_port
+                }
               }
-            }
-
-            dynamic "tcp_socket" {
-              for_each = var.use_tcp_probe ? [1] : []
-              content {
-                port = var.app_port
+              dynamic "tcp_socket" {
+                for_each = var.use_tcp_probe ? [1] : []
+                content {
+                  port = var.app_port
+                }
               }
+              initial_delay_seconds = 30
+              period_seconds        = 10
             }
-            
-            initial_delay_seconds = 30
-            period_seconds        = 10
           }
 
-          readiness_probe {
-            dynamic "http_get" {
-              for_each = var.use_tcp_probe ? [] : [1]
-              content {
-                path = "/404.html"
-                port = var.app_port
+          dynamic "readiness_probe" {
+            for_each = var.enable_probes ? [1] : []
+            content {
+              dynamic "http_get" {
+                for_each = var.use_tcp_probe ? [] : [1]
+                content {
+                  path = "/404.html"
+                  port = var.app_port
+                }
               }
-            }
-
-            dynamic "tcp_socket" {
-              for_each = var.use_tcp_probe ? [1] : []
-              content {
-                port = var.app_port
+              dynamic "tcp_socket" {
+                for_each = var.use_tcp_probe ? [1] : []
+                content {
+                  port = var.app_port
+                }
               }
+              initial_delay_seconds = 5
+              period_seconds        = 10
             }
-            
-            initial_delay_seconds = 5
-            period_seconds        = 10
           }
 
           security_context {
