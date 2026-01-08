@@ -1,45 +1,72 @@
-# SOAT - Infraestrutura do Cluster Kubernetes (infra-k8s)
+# SOAT - Infraestrutura do Cluster Kubernetes (infra-k8s) - Fase 04
+Este repositório gere a infraestrutura central da aplicação na AWS utilizando Terraform. Na Fase 4, a solução evoluiu para uma arquitetura de microsserviços segregados, utilizando mensageria para comunicação assíncrona e um pipeline de CI/CD focado em qualidade de código e segurança.
 
-Este repositório é responsável por gerenciar a infraestrutura central da aplicação na AWS usando Terraform. Ele provisiona a rede, o cluster Kubernetes (EKS), o registro de contêineres (ECR) e realiza o deploy da aplicação Rails.
+## 🚀 Evoluções da Fase 04
+Arquitetura de Microsserviços: Segregação total dos serviços de Pedido (Order), Pagamento (Payment) e Cozinha (Kitchen).
 
----
+Mensageria com RabbitMQ: Implementação de um cluster RabbitMQ para orquestrar a comunicação assíncrona entre os serviços.
 
-### Função no Projeto
+Estratégia de Consumers: Implementação de workers dedicados (Consumers) para processamento de filas em background, separados das APIs síncronas.
 
-Este é o repositório principal da infraestrutura. Sua responsabilidade é criar a "fundação" onde a aplicação irá rodar. Ele depende que a imagem da aplicação já tenha sido criada e enviada para o ECR pelo repositório `soat-challenge-backend-rails`.
+Qualidade e Segurança: Integração com SonarCloud para análise de qualidade e Checkov para varredura de segurança em IaC.
 
-### Recursos Provisionados
+Persistência Poliglota: Suporte para diferentes motores de base de dados conforme a necessidade do serviço (PostgreSQL, MongoDB e Redis).
 
-* **VPC:** Uma Virtual Private Cloud (`soat-challenge-vpc`) para isolar os recursos da rede.
-* **Sub-redes:** Sub-redes públicas e privadas distribuídas em múltiplas zonas de disponibilidade para alta disponibilidade.
-* **NAT Gateway:** Permite que os recursos em sub-redes privadas (como os nós do EKS) acessem a internet sem serem expostos publicamente.
-* **AWS EKS:** Um cluster Kubernetes gerenciado (`soat-challenge-cluster`) onde a aplicação será executada.
-* **AWS ECR:** Um repositório de contêineres (`soat-challenge/rails-app`) para armazenar as imagens Docker da aplicação.
-* **Kubernetes Resources:**
-    * `Deployment`: Define como executar os pods da aplicação Rails.
-    * `Service (LoadBalancer)`: Expõe a aplicação para a internet através de um Load Balancer da AWS.
-    * `Secret`: Gerencia a `DATABASE_URL` para a aplicação.
+## 🏗️ Recursos Provisionados
+Rede (VPC): VPC configurada com sub-redes públicas (para Load Balancers) e privadas (para os nós do cluster) em múltiplas zonas de disponibilidade.
 
-### Pré-requisitos
+AWS EKS: Cluster Kubernetes gerido para orquestração dos pods.
 
-1.  **Conta AWS:** Acesso a uma conta AWS com permissões para criar os recursos acima.
-2.  **Terraform:** Instalado localmente para testes (versão 1.0+).
-3.  **AWS CLI:** Instalada e configurada com credenciais.
-4.  **GitHub Secrets:** As seguintes secrets devem ser configuradas no repositório:
-    * `AWS_ACCESS_KEY_ID`
-    * `AWS_SECRET_ACCESS_KEY`
-    * `RAILS_MASTER_KEY` (e outras secrets da aplicação Rails)
-5.  **Segredo da `DATABASE_URL`:** O pipeline deste repositório espera que o segredo `soat/db/database_url` já exista no AWS Secrets Manager (ele é criado pelo pipeline do `soat-challenge-infra-db`).
+AWS ECR: Repositórios de imagens imutáveis para cada microsserviço com escaneamento automático de vulnerabilidades.
 
-### Como Utilizar
+RabbitMQ: Cluster de mensageria configurado internamente para comunicação entre serviços.
 
-O deploy é totalmente automatizado via GitHub Actions.
+Recursos Kubernetes (via Helm/Terraform):
 
-1.  **Desenvolvimento:** Crie uma nova branch para fazer alterações no código Terraform.
-2.  **Pull Request:** Abra um Pull Request para a branch `main`. O pipeline irá rodar um `terraform plan` para validar as mudanças e mostrar o plano de execução.
-3.  **Merge:** Após a aprovação e o merge na `main`, o pipeline `terraform-ci-cd.yml` será acionado.
-4.  **Deploy:** O workflow executará `terraform apply -auto-approve`, aplicando as mudanças de infraestrutura na AWS.
-5.  **Saída do Kubeconfig:** Ao final, o pipeline extrai o `kubeconfig` do cluster e o salva no AWS Secrets Manager sob o nome `soat/k8s/kubeconfig` para acesso futuro.
+Deployment: Deploy segregado para Apps (APIs) e Consumers.
 
+Service (LoadBalancer): Exposição externa das APIs de Pedido e Pagamento.
 
-###############
+Secret: Gestão dinâmica de credenciais via AWS Secrets Manager.
+
+## 🛡️ Qualidade e CI/CD
+O pipeline de CI/CD no GitHub Actions garante a integridade do sistema através de:
+
+Checkov Scan: Varredura automática de segurança nas configurações Terraform.
+
+SonarCloud Scan: Análise estática de código para medir cobertura de testes e identificar code smells.
+
+Terraform Test: Execução de testes de infraestrutura para validar lógicas de rede e variáveis.
+
+## ⚙️ Configurações de Microsserviços
+Cada módulo de microsserviço suporta configurações específicas para resiliência:
+
+Probes Dinâmicas: As health probes são desativadas ou configuradas como TCP para Consumers, enquanto as APIs utilizam probes HTTP.
+
+Init Containers: Execução automática de rails db:migrate apenas em serviços que utilizam bases relacionais (PostgreSQL).
+
+Secret Injection: A RAILS_MASTER_KEY é injetada dinamicamente, permitindo que os Consumers utilizem a chave do serviço "pai" correspondente.
+
+## 📋 Pré-requisitos
+AWS Secrets Manager: O pipeline espera que as seguintes chaves existam previamente:
+
+soat/db/database_url (PostgreSQL).
+
+soat/db/mongodb_url (MongoDB).
+
+soat/db/redis_url (Redis).
+
+soat/<service-name>/master_key (Rails Master Key).
+
+GitHub Secrets: Configuração de SONAR_TOKEN, AWS_ACCESS_KEY_ID e AWS_SECRET_ACCESS_KEY.
+
+## 🛠️ Como Utilizar
+O deploy é automatizado via Workflow Dispatch:
+
+Aceda à aba Actions no GitHub.
+
+Selecione o workflow Terraform CI/CD.
+
+Ative a opção "Deseja realizar o deploy das aplicações?" para provisionar os microsserviços após a infraestrutura de rede estar pronta.
+
+Para destruir a infraestrutura, utilize o workflow Terraform Destroy Infrastructure fornecendo a palavra de confirmação "destroy".
